@@ -67,12 +67,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         if(isFavourite){
             movie.setIsFavourite(false);
-            //Toast.makeText(this, "Un-Favourite", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.label_un_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = false;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }else {
             movie.setIsFavourite(true);
-            //Toast.makeText(this, "Favourite", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.label_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = true;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.favourite_color)));
         }
@@ -100,6 +100,5 @@ public class MovieDetailsActivity extends AppCompatActivity {
         tvOverview.setText(getString(R.string.overview) + " " + movie.getOverView());
         tvReleaseDate.setText(getString(R.string.release_date) + " " + movie.getReleaseDate());
         tvVoterAverage.setText(getString(R.string.vote_average) + " " + movie.getVoteAverage());
-
     }
 }

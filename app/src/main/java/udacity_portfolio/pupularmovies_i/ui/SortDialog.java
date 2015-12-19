@@ -24,10 +24,6 @@ public class SortDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        ArrayList<String> sortList = new ArrayList<>();
-        /*sortList.add(getString(R.string.highest_rated));
-        sortList.add(getString(R.string.most_popular));*/
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.label_sort))
                 .setMultiChoiceItems(R.array.sort_menu, null, new DialogInterface.OnMultiChoiceClickListener() {
@@ -53,6 +49,4 @@ public class SortDialog extends DialogFragment {
 
         mSortDialogListener = (SortDialogListener) activity;
     }
-
-
 }

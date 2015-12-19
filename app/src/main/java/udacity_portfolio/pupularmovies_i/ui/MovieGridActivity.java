@@ -56,10 +56,16 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         setContentView(R.layout.activity_movie_grid);
         ButterKnife.bind(this);
 
+        String screenType = getResources().getString(R.string.screen_type);
+        Log.i(TAG, "Screen Type : " + screenType);
 
-        movieGridView.setHasFixedSize(true);
-        mLayoutManager = new GridLayoutManager(this, 2);
-        movieGridView.setLayoutManager(mLayoutManager);
+        if(screenType.equalsIgnoreCase("10 inch tablet")){
+            mLayoutManager = new GridLayoutManager(this, 3);
+            movieGridView.setLayoutManager(mLayoutManager);
+        }else {
+            mLayoutManager = new GridLayoutManager(this, 2);
+            movieGridView.setLayoutManager(mLayoutManager);
+        }
 
         if(isNetworkAvailable()){
             makeMovieRequest(Constants.URL);
@@ -83,20 +89,17 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         }
     }
 
-    private void makeMovieRequest(String url){
+    private void makeMovieRequest(String url) {
 
         progressBar.setVisibility(View.VISIBLE);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
-                //Log.i(TAG, "Response : " + response);
-                if(response != null){
-                    try {
-                        parseResponse(response);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    parseResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
@@ -104,7 +107,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             public void onErrorResponse(VolleyError error) {
 
                 showInformationDialog(error.getMessage());
-                //Log.i(TAG, "Error : " + error.getMessage());
             }
         });
 
@@ -135,14 +137,14 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
     private void showSortDialog(){
 
         DialogFragment sortFragment = new SortDialog();
-        sortFragment.show(getSupportFragmentManager(), "Sort");
+        sortFragment.show(getSupportFragmentManager(), getResources().getString(R.string.label_sort));
 
     }
 
     private void showInformationDialog(String title){
 
         DialogFragment infoDialog = InformationDialog.newInstance(title);
-        infoDialog.show(getSupportFragmentManager(), "Network");
+        infoDialog.show(getSupportFragmentManager(), getResources().getString(R.string.label_network));
 
     }
 
@@ -172,8 +174,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             mMovieList.add(movie);
         }
 
-        //Log.i(TAG, "Total Movies : " + mMovieList.size());
-
         progressBar.setVisibility(View.GONE);
         movieGridView.setVisibility(View.VISIBLE);
         MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
@@ -182,7 +182,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     @Override
     public void which(int which, boolean isChecked, DialogInterface dialog) {
-        Log.i(TAG, "Which in Activity : " + which + " isChecked : " + isChecked);
 
         if(which == 0 && isChecked){
 

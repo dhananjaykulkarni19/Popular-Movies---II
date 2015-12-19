@@ -1,0 +1,1 @@
+Please replace the static string variable API_KEY in package utils -> Constants.java file.
