@@ -15,13 +15,17 @@
     <string name="label_network">Network</string>
     <string name="label_favourite">Favourite</string>
     <string name="label_un_favourite">Un-Favourite</string>
+    <string name="label_read_more">Read More</string>
+    <string name="label_trailer_1">Trailer 1</string>
+    <string name="label_trailer_2">Trailer 2</string>
+    <string name="label_trailer_3">Trailer 3</string>
 
     <string-array name="sort_menu">
         <item>Highest Rated</item>
         <item>Most Popular</item>
+        <item>Favourites</item>
     </string-array>
-
-
+    <string name="label_reviews">Reviews</string>
 
 
 </resources>

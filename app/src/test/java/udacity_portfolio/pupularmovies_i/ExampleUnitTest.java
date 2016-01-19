@@ -1,4 +1,4 @@
-package udacity_portfolio.pupularmovies_i;
+package udacity_portfolio.pupularmovies_II;
 
 import org.junit.Test;
 

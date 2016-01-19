@@ -4,12 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="udacity_portfolio.pupularmovies_i.ui.MovieDetailsActivity"
+    tools:context="udacity_portfolio.pupularmovies_II.ui.MovieDetailsActivity"
     tools:showIn="@layout/activity_movie_details">
 
     <ScrollView
@@ -17,29 +16,23 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/moviethumbnail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_margin="@dimen/view_margin"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/tvreleasedate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/moviethumbnail"
-                android:layout_margin="@dimen/view_margin"/>
+                android:layout_margin="@dimen/view_margin"
+                tools:text="Release : 10 - Jan - 2016"/>
 
             <TextView
                 android:id="@+id/tvvoteaverage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvreleasedate"
-                android:layout_margin="@dimen/view_margin"/>
+                android:layout_margin="@dimen/view_margin"
+                android:layout_toEndOf="@id/tvreleasedate"
+                tools:text="Average Vote : 7.52"/>
 
             <TextView
                 android:id="@+id/tvoverview"
@@ -47,6 +40,47 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvvoteaverage"
                 android:layout_margin="@dimen/view_margin"/>
+
+
+
+            <LinearLayout
+                android:id="@+id/trailerbuttonlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@+id/tvoverview"
+                android:padding="@dimen/view_margin">
+
+                <Button
+                    android:id="@+id/btntrailer1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_1"/>
+
+                <Button
+                    android:id="@+id/btntrailer2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_2"/>
+
+                <Button
+                    android:id="@+id/btntrailer3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_3"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnreviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/trailerbuttonlayout"
+                android:text="@string/label_reviews"
+                android:layout_margin="10dp"/>
 
         </RelativeLayout>
     </ScrollView>

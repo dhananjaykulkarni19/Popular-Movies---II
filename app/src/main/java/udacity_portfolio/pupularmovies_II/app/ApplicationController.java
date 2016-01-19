@@ -1,7 +1,8 @@
-package udacity_portfolio.pupularmovies_i.app;
+package udacity_portfolio.pupularmovies_II.app;
 
 import android.app.Application;
 
+import com.activeandroid.ActiveAndroid;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -21,6 +22,7 @@ public class ApplicationController extends Application {
         super.onCreate();
 
         sInstance = this;
+        ActiveAndroid.initialize(this);
     }
 
     public static synchronized ApplicationController getInstance(){

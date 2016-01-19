@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="udacity_portfolio.pupularmovies_i.ui.MovieDetailsActivity"
+    tools:context="udacity_portfolio.pupularmovies_II.ui.MovieDetailsActivity"
     tools:showIn="@layout/activity_movie_details">
 
     <ScrollView
@@ -50,6 +50,58 @@
                 android:layout_below="@+id/tvvoteaverage"
                 style="@style/TabTextStyle"
                 android:layout_margin="@dimen/view_margin"/>
+
+            <TextView
+                android:id="@+id/tvreadmore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvoverview"
+                android:visibility="gone"
+                android:layout_marginTop="30dp"
+                style="@style/readMoreStyle"
+                tools:visibility="visible"/>
+
+            <LinearLayout
+                android:id="@+id/trailerbuttonlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/view_margin_large"
+                android:layout_below="@id/tvreadmore"
+                android:padding="@dimen/view_margin_large">
+
+                <Button
+                    android:id="@+id/btntrailer1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_1"/>
+
+                <Button
+                    android:id="@+id/btntrailer2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_2"/>
+
+                <Button
+                    android:id="@+id/btntrailer3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_trailer_3"/>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lvreviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/trailerbuttonlayout"
+                android:layout_marginTop="@dimen/view_margin_large"
+                android:layout_marginBottom="@dimen/view_margin_large"
+                android:padding="@dimen/view_margin_large">
+            </android.support.v7.widget.RecyclerView>
 
         </RelativeLayout>
     </ScrollView>

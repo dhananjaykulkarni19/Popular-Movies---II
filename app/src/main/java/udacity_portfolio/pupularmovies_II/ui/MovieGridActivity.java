@@ -1,4 +1,4 @@
-package udacity_portfolio.pupularmovies_i.ui;
+package udacity_portfolio.pupularmovies_II.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,11 +30,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import udacity_portfolio.pupularmovies_i.R;
-import udacity_portfolio.pupularmovies_i.adapters.MovieAdapter;
-import udacity_portfolio.pupularmovies_i.app.ApplicationController;
-import udacity_portfolio.pupularmovies_i.model.Movie;
-import udacity_portfolio.pupularmovies_i.utils.Constants;
+import udacity_portfolio.pupularmovies_II.R;
+import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
+import udacity_portfolio.pupularmovies_II.app.ApplicationController;
+import udacity_portfolio.pupularmovies_II.model.Movie;
+import udacity_portfolio.pupularmovies_II.utils.Constants;
 
 public class MovieGridActivity extends AppCompatActivity implements SortDialog.SortDialogListener{
 
@@ -50,6 +50,8 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     private RecyclerView.LayoutManager mLayoutManager;
 
+    Movie movie;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +59,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         ButterKnife.bind(this);
 
         String screenType = getResources().getString(R.string.screen_type);
-        Log.i(TAG, "Screen Type : " + screenType);
 
         if(screenType.equalsIgnoreCase("10 inch tablet")){
             mLayoutManager = new GridLayoutManager(this, 3);
@@ -110,7 +111,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             }
         });
 
-
         ApplicationController.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
@@ -128,6 +128,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
             case R.id.sort:
                 showSortDialog();
+                //getFavouriteMovies();
             break;
 
         }
@@ -162,20 +163,23 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             String voteAverage = results.getJSONObject(resultCount).getString("vote_average");
             String releaseDate = results.getJSONObject(resultCount).getString("release_date");
             String poster = results.getJSONObject(resultCount).getString("poster_path");
+            int id = results.getJSONObject(resultCount).getInt("id");
 
-            Movie movie = new Movie();
-            movie.setTitle(title);
-            movie.setThumbNail(Constants.IMAGE_BASE_URL +thumbNail);
-            movie.setOverView(overView);
-            movie.setVoteAverage(voteAverage);
-            movie.setReleaseDate(releaseDate);
-            movie.setPoster(Constants.IMAGE_BASE_URL + poster);
+            movie = new Movie();
+            movie.title = title;
+            movie.thumbNail  = Constants.IMAGE_BASE_URL +thumbNail;
+            movie.overView = overView;
+            movie.voteAverage = voteAverage;
+            movie.releaseDate = releaseDate;
+            movie.poster = Constants.IMAGE_BASE_URL + poster;
+            movie.id = id;
 
-            mMovieList.add(movie);
+            movie.save();
         }
 
         progressBar.setVisibility(View.GONE);
         movieGridView.setVisibility(View.VISIBLE);
+        mMovieList = Movie.getAllMovies();
         MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
         movieGridView.setAdapter(adapter);
     }
@@ -194,6 +198,17 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             makeMovieRequest(Constants.POPULARITY_URL);
             dialog.dismiss();
             movieGridView.setVisibility(View.GONE);
+
+        }else if(which ==2 && isChecked){
+
+            dialog.dismiss();
+
+            if(getFavouriteMovies().size() > 0){
+                MovieAdapter adapter = new MovieAdapter(getApplicationContext(), getFavouriteMovies());
+                movieGridView.setAdapter(adapter);
+            }else{
+                Toast.makeText(MovieGridActivity.this, "You don't have any favourites", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -201,5 +216,10 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    private List<Movie> getFavouriteMovies(){
+
+       return Movie.getAllFavouriteMovies();
     }
 }

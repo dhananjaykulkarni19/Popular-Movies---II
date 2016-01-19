@@ -1,4 +1,4 @@
-package udacity_portfolio.pupularmovies_i.ui;
+package udacity_portfolio.pupularmovies_II.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,11 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 
-import java.util.ArrayList;
-
-import udacity_portfolio.pupularmovies_i.R;
+import udacity_portfolio.pupularmovies_II.R;
 
 /**
  * Created by admin on 12/10/2015.
