@@ -2,24 +2,18 @@ package udacity_portfolio.pupularmovies_II.ui;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +34,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
-import udacity_portfolio.pupularmovies_II.adapters.MovieReviewsAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.model.MovieReviews;
@@ -143,8 +136,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         if(mTrailersList.size() > 0){
 
-            Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(0));
-            startActivity(intent);
+            startYoutube(0);
 
         }
     }
@@ -154,8 +146,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         if(mTrailersList.size() > 1){
 
-            Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(1));
-            startActivity(intent);
+            startYoutube(1);
 
         }
     }
@@ -165,8 +156,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         if(mTrailersList.size() > 2){
 
-            Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(2));
-            startActivity(intent);
+            startYoutube(2);
+
         }
     }
 
@@ -214,7 +205,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
                 if(mTrailersList != null && mTrailersList.size() > 0 ){
 
-                    String video = "https://www.youtube.com/watch?v=" + mTrailersList.get(0);
+                    String video = Constants.YOUTUBE_URL + mTrailersList.get(0);
 
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
@@ -223,7 +214,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     startActivity(sendIntent);
 
                 }
-
             break;
         }
         return true;
@@ -259,6 +249,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         getMovieData(mTrailersUrl);
         getMovieData(mReviewsUrl);
+    }
+
+    private void startYoutube(int position){
+
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(position));
+        startActivity(intent);
     }
 
     private void checkFavourite(){

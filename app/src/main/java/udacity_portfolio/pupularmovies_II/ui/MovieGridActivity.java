@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -240,7 +239,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
                 MovieAdapter adapter = new MovieAdapter(getApplicationContext(), getFavouriteMovies());
                 movieGridView.setAdapter(adapter);
             }else{
-                Toast.makeText(MovieGridActivity.this, "You don't have any favourites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MovieGridActivity.this, R.string.no_favourites, Toast.LENGTH_SHORT).show();
             }
         }
     }
