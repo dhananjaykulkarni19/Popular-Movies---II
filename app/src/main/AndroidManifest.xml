@@ -29,8 +29,13 @@
         </activity>
         <activity
             android:name=".ui.MovieDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.ReviewsActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".ui.ReviewsActivity"
+            android:label="@string/label_reviews"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

@@ -40,6 +40,13 @@ public class Movie extends Model{
     @Column(name="isFavourite")
     public boolean isFavourite;
 
+    @Column(name="isHighestRated")
+    public boolean isHighestRated;
+
+    @Column(name="isPopular")
+    public boolean isPopular;
+
+
     public Movie() {
         super();
     }
@@ -51,4 +58,13 @@ public class Movie extends Model{
     public static List<Movie> getAllFavouriteMovies(){
         return new Select().from(Movie.class).where("isFavourite = ?", true).execute();
     }
+
+    public static List<Movie> getAllHighestRatedMovies(){
+        return new Select().from(Movie.class).where("isHighestRated = ?", true).execute();
+    }
+
+    public static List<Movie> getAllPopularMovies(){
+        return new Select().from(Movie.class).where("isPopular = ?", true).execute();
+    }
+
 }

@@ -2,6 +2,7 @@ package udacity_portfolio.pupularmovies_II.ui;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -74,11 +77,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Bind(R.id.btntrailer3)
     Button btnTrailer3;
 
+    @Bind(R.id.trailermasterlayout)
+    LinearLayout trailerMasterLayout;
+
     @Bind(R.id.trailerbuttonlayout)
     LinearLayout trailerButtonLayout;
 
     @Bind(R.id.btnreviews)
     Button btnReviews;
+
+    @Bind(R.id.tvgettingvideos)
+    TextView tvVideoInfo;
 
     Movie movie;
     MovieReviews movieReviews;
@@ -90,10 +99,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private ArrayList<MovieReviews> mReviewsList;
 
     String mTrailersUrl, mReviewsUrl;
-
-    private LinearLayoutManager mLayoutManager;
-
-    MovieReviewsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,13 +173,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @OnClick(R.id.btnreviews)
     public void reviews(){
 
-        Intent intent = new Intent();
-        intent.setClass(MovieDetailsActivity.this, ReviewsActivity.class);
-        EventBus.getDefault().postSticky(movie);
-
-
-        startActivity(intent);
-
+        if(MovieReviews.getAllMovieReviews(movieId).size() == 0){
+            Toast.makeText(this, R.string.no_reviews, Toast.LENGTH_SHORT).show();
+        }else{
+            Intent intent = new Intent();
+            intent.setClass(MovieDetailsActivity.this, ReviewsActivity.class);
+            EventBus.getDefault().postSticky(movie);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -183,14 +189,44 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         EventBus.getDefault().registerSticky(this);
 
-        mLayoutManager = new LinearLayoutManager(MovieDetailsActivity.this);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_share, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.action_share:
+
+                if(mTrailersList != null && mTrailersList.size() > 0 ){
+
+                    String video = "https://www.youtube.com/watch?v=" + mTrailersList.get(0);
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, video);
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+
+                }
+
+            break;
+        }
+        return true;
     }
 
     public void onEventMainThread(Movie movie){
@@ -211,15 +247,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
         tvReleaseDate.setText(getString(R.string.release_date) + " " + movie.releaseDate);
         tvVoterAverage.setText(getString(R.string.vote_average) + " " + movie.voteAverage);
 
-        trailerButtonLayout.setVisibility(View.GONE);
-
         checkFavourite();
-
-        //enableReadMore();
 
         movieId = String.valueOf(movie.id);
 
-        Log.i("Movie Id : ", movieId);
+        trailerMasterLayout.setVisibility(View.VISIBLE);
+        tvVideoInfo.setVisibility(View.VISIBLE);
 
         mTrailersUrl = Constants.TRAILERS_URL_PART_1 + movieId + Constants.TRAILERS_URL_PART_2;
         mReviewsUrl = Constants.REVIEWS_URL_PART_1 + movieId + Constants.REVIEWS_URL_PART_2;
@@ -236,27 +269,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }
     }
-
-    /*private void enableReadMore(){
-        ViewTreeObserver observer = tvOverview.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Layout layout = tvOverview.getLayout();
-                if (layout != null) {
-                    int lines = layout.getLineCount();
-                    if (lines > 0) {
-                        int ellipsisCount = layout.getEllipsisCount(lines - 1);
-                        if (ellipsisCount > 0) {
-                            tvReadMore.setVisibility(View.VISIBLE);
-                        } else {
-                            tvReadMore.setVisibility(View.GONE);
-                        }
-                    }
-                }
-            }
-        });
-    }*/
 
     private void getMovieData(final String url){
 
@@ -275,7 +287,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(MovieDetailsActivity.this, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MovieDetailsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Exception ..!!!");
 
             }
         });
@@ -303,12 +316,19 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
                 btnTrailer2.setVisibility(View.GONE);
                 btnTrailer3.setVisibility(View.GONE);
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
                 trailerButtonLayout.setVisibility(View.VISIBLE);
 
             }else if(mTrailersList.size() < 3){
                 btnTrailer3.setVisibility(View.GONE);
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
                 trailerButtonLayout.setVisibility(View.VISIBLE);
             }else{
+
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
                 trailerButtonLayout.setVisibility(View.VISIBLE);
             }
 
@@ -331,12 +351,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 movieReviews.save();
 
             }
-
-            Log.i(TAG, "Reviews Size : " + MovieReviews.getAllMovieReviews(movieId).size());
-
-            //mAdapter = new MovieReviewsAdapter(MovieDetailsActivity.this, MovieReviews.getAllMovieReviews(movieId));
-            //lvReviews.setAdapter(mAdapter);
-
         }
     }
 }

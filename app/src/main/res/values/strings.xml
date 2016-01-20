@@ -19,14 +19,16 @@
     <string name="label_trailer_1">Trailer 1</string>
     <string name="label_trailer_2">Trailer 2</string>
     <string name="label_trailer_3">Trailer 3</string>
+    <string name="label_reviews">Reviews</string>
+    <string name="no_reviews">This movie does not have any reviews yet</string>
+    <string name="label_share">Share</string>
 
     <string-array name="sort_menu">
         <item>Highest Rated</item>
         <item>Most Popular</item>
         <item>Favourites</item>
     </string-array>
-    <string name="label_reviews">Reviews</string>
-
+    <string name="getting_videos">Please wait getting trailers …</string>
 
 </resources>
 

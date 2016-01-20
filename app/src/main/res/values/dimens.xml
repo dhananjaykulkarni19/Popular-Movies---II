@@ -7,4 +7,5 @@
     <dimen name="view_margin_large">30dp</dimen>
     <dimen name="app_bar_height">300dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="small_margin">5dp</dimen>
 </resources>

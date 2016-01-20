@@ -3,14 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="udacity_portfolio.pupularmovies_II.ui.ReviewsActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.MovieDetailsActivity">
 
     <ListView
         android:id="@+id/lvreviews"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/trailerbuttonlayout"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/view_margin">
     </ListView>
 
 </RelativeLayout>
+
+

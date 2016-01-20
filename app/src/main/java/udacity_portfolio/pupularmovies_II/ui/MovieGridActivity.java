@@ -90,7 +90,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         }
     }
 
-    private void makeMovieRequest(String url) {
+    private void makeMovieRequest(final String url) {
 
         progressBar.setVisibility(View.VISIBLE);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
@@ -98,7 +98,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             public void onResponse(JSONObject response) {
 
                 try {
-                    parseResponse(response);
+                    parseResponse(url, response);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -128,7 +128,6 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
             case R.id.sort:
                 showSortDialog();
-                //getFavouriteMovies();
             break;
 
         }
@@ -149,7 +148,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     }
 
-    private void parseResponse(JSONObject response) throws JSONException {
+    private void parseResponse(String url, JSONObject response) throws JSONException {
 
         movieGridView.setVisibility(View.VISIBLE);
         mMovieList = new ArrayList<>();
@@ -174,14 +173,48 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             movie.poster = Constants.IMAGE_BASE_URL + poster;
             movie.id = id;
 
+            if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
+                movie.isHighestRated = true;
+            }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
+                movie.isPopular = true;
+            }
+
             movie.save();
         }
 
         progressBar.setVisibility(View.GONE);
         movieGridView.setVisibility(View.VISIBLE);
-        mMovieList = Movie.getAllMovies();
-        MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
-        movieGridView.setAdapter(adapter);
+
+        if(url.equalsIgnoreCase(Constants.URL)){
+            mMovieList = Movie.getAllMovies();
+            MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
+            movieGridView.setAdapter(adapter);
+
+            if(getSupportActionBar() != null){
+
+                getSupportActionBar().setTitle(R.string.app_name);
+            }
+
+        }else if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
+            mMovieList = Movie.getAllHighestRatedMovies();
+            MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
+            movieGridView.setAdapter(adapter);
+
+            if(getSupportActionBar() != null){
+
+                getSupportActionBar().setTitle(R.string.highest_rated);
+            }
+
+        }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
+            mMovieList = Movie.getAllPopularMovies();
+            MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
+            movieGridView.setAdapter(adapter);
+
+            if(getSupportActionBar() != null){
+
+                getSupportActionBar().setTitle(R.string.most_popular);
+            }
+        }
     }
 
     @Override
