@@ -1,13 +1,16 @@
 package udacity_portfolio.pupularmovies_II.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -16,7 +19,9 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.model.Movie;
+import udacity_portfolio.pupularmovies_II.ui.MovieDetailFragment;
 import udacity_portfolio.pupularmovies_II.ui.MovieDetailsActivity;
+import udacity_portfolio.pupularmovies_II.ui.MovieGridActivity;
 
 /**
  * Created by admin on 12/2/2015.
@@ -62,11 +67,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent();
-                intent.setClass(mContext, MovieDetailsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                EventBus.getDefault().postSticky(movie);
-                mContext.startActivity(intent);
+                if(mContext.getText(R.string.screen_type).toString().equalsIgnoreCase("Large")){
+
+                    EventBus.getDefault().postSticky(movie);
+
+                }else{
+                    Intent intent = new Intent();
+                    intent.setClass(mContext, MovieDetailsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    EventBus.getDefault().postSticky(movie);
+                    mContext.startActivity(intent);
+                }
+
+
             }
         });
     }

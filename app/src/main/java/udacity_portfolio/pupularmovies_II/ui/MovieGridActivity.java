@@ -1,5 +1,6 @@
 package udacity_portfolio.pupularmovies_II.ui;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -10,9 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
@@ -56,18 +60,35 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
         ButterKnife.bind(this);
-
         String screenType = getResources().getString(R.string.screen_type);
 
-        if(screenType.equalsIgnoreCase("10 inch tablet")){
-            mLayoutManager = new GridLayoutManager(this, 3);
-            movieGridView.setLayoutManager(mLayoutManager);
+        if(screenType.equalsIgnoreCase("Large")){
+
+            Log.i(TAG, "Tablet Layout Loaded");
+            FrameLayout layout = (FrameLayout) findViewById(R.id.fragment_container);
+            movieGridView.setVisibility(View.GONE);
+            layout.setVisibility(View.VISIBLE);
+
+            MasterFragment fragment = new MasterFragment();
+            if(layout != null){
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.fragment_container, fragment).commit();
+            }else{
+                Log.i(TAG, "Container Null");
+            }
+
+            /*mLayoutManager = new GridLayoutManager(this, 3);
+            movieGridView.setLayoutManager(mLayoutManager);*/
         }else {
+
             mLayoutManager = new GridLayoutManager(this, 2);
             movieGridView.setLayoutManager(mLayoutManager);
         }
 
         if(isNetworkAvailable()){
+            Log.i(TAG, "Making request from activity");
             makeMovieRequest(Constants.URL);
         }else{
             showInformationDialog(getString(R.string.network_message));
@@ -149,6 +170,8 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     private void parseResponse(String url, JSONObject response) throws JSONException {
 
+        Log.i(TAG, "Parsing JSON from activity");
+
         movieGridView.setVisibility(View.VISIBLE);
         mMovieList = new ArrayList<>();
         JSONArray results = response.getJSONArray("results");
@@ -183,6 +206,8 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
         progressBar.setVisibility(View.GONE);
         movieGridView.setVisibility(View.VISIBLE);
+
+        EventBus.getDefault().postSticky(Movie.getAllMovies());
 
         if(url.equalsIgnoreCase(Constants.URL)){
             mMovieList = Movie.getAllMovies();

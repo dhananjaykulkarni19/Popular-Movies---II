@@ -30,6 +30,7 @@
     </string-array>
     <string name="getting_videos">Please wait getting trailers …</string>
     <string name="no_favourites">You don\'t have any favourites</string>
+    <string name="no_youtube">Please install Youtube app to watch this trailer</string>
 
 </resources>
 

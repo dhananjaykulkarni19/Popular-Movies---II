@@ -1,16 +1,18 @@
 package udacity_portfolio.pupularmovies_II.ui;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,18 +30,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
+import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.model.MovieReviews;
 import udacity_portfolio.pupularmovies_II.utils.Constants;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+/**
+ * Created by admin on 1/26/2016.
+ */
+public class MovieDetailFragment extends Fragment {
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -82,7 +89,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Bind(R.id.tvgettingvideos)
     TextView tvVideoInfo;
 
-    Movie movie;
     MovieReviews movieReviews;
     private boolean isFavourite = false;
 
@@ -93,22 +99,22 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     String mTrailersUrl, mReviewsUrl;
 
+    Movie movie;
+
+    View rootView;
+
+    public MovieDetailFragment(){}
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_details);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        ButterKnife.bind(this, rootView);
 
+        Toast.makeText(getActivity(), "MovieDetailFragment", Toast.LENGTH_SHORT).show();
+
+        return rootView;
     }
 
     @OnClick(R.id.fab)
@@ -117,14 +123,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if(isFavourite){
 
             movie.isFavourite = false;
-            Toast.makeText(this, getString(R.string.label_un_favourite), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.label_un_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = false;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
             movie.save();
 
         }else {
             movie.isFavourite = true;
-            Toast.makeText(this, getString(R.string.label_favourite), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.label_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = true;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.favourite_color)));
             movie.save();
@@ -165,76 +171,43 @@ public class MovieDetailsActivity extends AppCompatActivity {
     public void reviews(){
 
         if(MovieReviews.getAllMovieReviews(movieId).size() == 0){
-            Toast.makeText(this, R.string.no_reviews, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.no_reviews, Toast.LENGTH_SHORT).show();
         }else{
 
             trailerMasterLayout.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent();
-            intent.setClass(MovieDetailsActivity.this, ReviewsActivity.class);
+            intent.setClass(getActivity(), ReviewsActivity.class);
             EventBus.getDefault().postSticky(movie);
             startActivity(intent);
         }
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-
-        EventBus.getDefault().registerSticky(this);
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.menu_share, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-
-            case R.id.action_share:
-
-                if(mTrailersList != null && mTrailersList.size() > 0 ){
-
-                    String video = Constants.YOUTUBE_URL + mTrailersList.get(0);
-
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, video);
-                    sendIntent.setType("text/plain");
-                    startActivity(sendIntent);
-
-                }
-            break;
+        if(!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().registerSticky(this);
         }
-        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     public void onEventMainThread(Movie movie){
 
+        Log.i("Movie", "Received Movie Details in fragment");
+
         this.movie = movie;
 
-        Picasso.with(this)
+        Picasso.with(getActivity())
                 .load(movie.poster)
                 .placeholder(R.mipmap.ic_placeholder)
                 .error(R.mipmap.ic_image_error)
                 .into(ivMovieThumbnail);
-
-        if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(movie.title);
-        }
 
         tvOverview.setText(getString(R.string.overview) + " " + movie.overView);
         tvReleaseDate.setText(getString(R.string.release_date) + " " + movie.releaseDate);
@@ -256,8 +229,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private void startYoutube(int position){
 
-        Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(position));
-        startActivity(intent);
+        try{
+            Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), Constants.YOUTUBE_API_KEY, mTrailersList.get(position));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }catch (ActivityNotFoundException e){
+
+            e.printStackTrace();
+            Toast.makeText(getActivity(), getString(R.string.no_youtube), Toast.LENGTH_SHORT).show();
+
+        }
+
     }
 
     private void checkFavourite(){
@@ -286,7 +268,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(MovieDetailsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "Exception ..!!!");
 
             }
@@ -352,4 +334,5 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         }
     }
+
 }
