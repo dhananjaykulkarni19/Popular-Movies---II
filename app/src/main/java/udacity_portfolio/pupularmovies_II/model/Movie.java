@@ -67,4 +67,8 @@ public class Movie extends Model{
         return new Select().from(Movie.class).where("isPopular = ?", true).execute();
     }
 
+    public static Movie getMovieById(int id){
+        return new Select().from(Movie.class).where("movieid = ?" , id).executeSingle();
+
+    }
 }

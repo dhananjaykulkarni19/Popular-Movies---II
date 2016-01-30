@@ -1,6 +1,5 @@
 package udacity_portfolio.pupularmovies_II.ui;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -36,8 +35,9 @@ import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
+import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
 import udacity_portfolio.pupularmovies_II.model.Movie;
-import udacity_portfolio.pupularmovies_II.utils.Constants;
+import udacity_portfolio.pupularmovies_II.utils.Utils;
 
 public class MovieGridActivity extends AppCompatActivity implements SortDialog.SortDialogListener{
 
@@ -74,12 +74,12 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fragment_container, fragment).commit();
+                        .replace(R.id.fragment_container, fragment).commit();
             }else{
                 Log.i(TAG, "Container Null");
             }
 
-            /*mLayoutManager = new GridLayoutManager(this, 3);
+           /* mLayoutManager = new GridLayoutManager(this, 3);
             movieGridView.setLayoutManager(mLayoutManager);*/
         }else {
 
@@ -89,7 +89,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
         if(isNetworkAvailable()){
             Log.i(TAG, "Making request from activity");
-            makeMovieRequest(Constants.URL);
+            makeMovieRequest(Utils.URL);
         }else{
             showInformationDialog(getString(R.string.network_message));
         }
@@ -127,7 +127,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                showInformationDialog(error.getMessage());
+                //showInformationDialog(error.getMessage());
             }
         });
 
@@ -188,16 +188,16 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
             movie = new Movie();
             movie.title = title;
-            movie.thumbNail  = Constants.IMAGE_BASE_URL +thumbNail;
+            movie.thumbNail  = Utils.IMAGE_BASE_URL +thumbNail;
             movie.overView = overView;
             movie.voteAverage = voteAverage;
             movie.releaseDate = releaseDate;
-            movie.poster = Constants.IMAGE_BASE_URL + poster;
+            movie.poster = Utils.IMAGE_BASE_URL + poster;
             movie.id = id;
 
-            if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
+            if(url.equalsIgnoreCase(Utils.HIGHEST_RATED_URL)){
                 movie.isHighestRated = true;
-            }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
+            }else if(url.equalsIgnoreCase(Utils.POPULARITY_URL)){
                 movie.isPopular = true;
             }
 
@@ -209,7 +209,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
         EventBus.getDefault().postSticky(Movie.getAllMovies());
 
-        if(url.equalsIgnoreCase(Constants.URL)){
+        if(url.equalsIgnoreCase(Utils.URL)){
             mMovieList = Movie.getAllMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -219,7 +219,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
                 getSupportActionBar().setTitle(R.string.app_name);
             }
 
-        }else if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
+        }else if(url.equalsIgnoreCase(Utils.HIGHEST_RATED_URL)){
             mMovieList = Movie.getAllHighestRatedMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -229,7 +229,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
                 getSupportActionBar().setTitle(R.string.highest_rated);
             }
 
-        }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
+        }else if(url.equalsIgnoreCase(Utils.POPULARITY_URL)){
             mMovieList = Movie.getAllPopularMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -247,12 +247,12 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         if(which == 0 && isChecked){
 
             movieGridView.setVisibility(View.GONE);
-            makeMovieRequest(Constants.HIGHEST_RATED_URL);
+            makeMovieRequest(Utils.HIGHEST_RATED_URL);
             dialog.dismiss();
 
         }else if(which == 1 && isChecked){
 
-            makeMovieRequest(Constants.POPULARITY_URL);
+            makeMovieRequest(Utils.POPULARITY_URL);
             dialog.dismiss();
             movieGridView.setVisibility(View.GONE);
 
@@ -261,8 +261,10 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
             dialog.dismiss();
 
             if(getFavouriteMovies().size() > 0){
+
                 MovieAdapter adapter = new MovieAdapter(getApplicationContext(), getFavouriteMovies());
                 movieGridView.setAdapter(adapter);
+                EventBus.getDefault().postSticky(getFavouriteMovies());
             }else{
                 Toast.makeText(MovieGridActivity.this, R.string.no_favourites, Toast.LENGTH_SHORT).show();
             }
@@ -277,6 +279,24 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     private List<Movie> getFavouriteMovies(){
 
-       return Movie.getAllFavouriteMovies();
+        List<FavouriteMovie> favouriteMovieList = FavouriteMovie.getAllFavouriteMovieIds();
+        List<String> favouriteMovieIdList = new ArrayList<>();
+
+        for(int i=0; i<favouriteMovieList.size(); i++){
+
+            favouriteMovieIdList.add(favouriteMovieList.get(i).favMovieId);
+        }
+
+        List<Movie> favouriteMovies = new ArrayList<>();
+
+        for(int i = 0; i< favouriteMovieIdList.size(); i++){
+
+            if(!favouriteMovieIdList.get(i).equalsIgnoreCase("")){
+                favouriteMovies.add(Movie.getMovieById(Integer.parseInt(favouriteMovieIdList.get(i))));
+            }
+        }
+
+       EventBus.getDefault().postSticky(favouriteMovies);
+       return favouriteMovies;
     }
 }

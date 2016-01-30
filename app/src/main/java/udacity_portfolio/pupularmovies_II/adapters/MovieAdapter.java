@@ -78,8 +78,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     EventBus.getDefault().postSticky(movie);
                     mContext.startActivity(intent);
                 }
-
-
             }
         });
     }

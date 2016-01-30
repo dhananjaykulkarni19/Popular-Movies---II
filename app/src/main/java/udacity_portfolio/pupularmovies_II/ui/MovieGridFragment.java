@@ -5,12 +5,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -26,6 +24,10 @@ import udacity_portfolio.pupularmovies_II.model.Movie;
  */
 public class MovieGridFragment extends Fragment {
 
+    private final String TAG = this.getClass().getSimpleName();
+
+    private List<Movie> mMovieList;
+
     View rootView;
 
     @Bind(R.id.moviegridview)
@@ -36,8 +38,9 @@ public class MovieGridFragment extends Fragment {
 
     private RecyclerView.LayoutManager mLayoutManager;
 
-    public MovieGridFragment(){}
+    Movie movie;
 
+    public MovieGridFragment(){}
 
     @Nullable
     @Override
@@ -49,8 +52,6 @@ public class MovieGridFragment extends Fragment {
         pbLoading.setVisibility(View.VISIBLE);
         mLayoutManager = new GridLayoutManager(getActivity(), 2);
         movieGridView.setLayoutManager(mLayoutManager);
-
-        //Toast.makeText(getActivity(), "MovieGridFragment", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }
@@ -71,11 +72,10 @@ public class MovieGridFragment extends Fragment {
 
     public void onEventMainThread(List<Movie> list){
 
-        Log.i("List", "Movie list received in fragment");
-
         pbLoading.setVisibility(View.GONE);
         movieGridView.setVisibility(View.VISIBLE);
         MovieAdapter movieAdapter = new MovieAdapter(getActivity(), list);
         movieGridView.setAdapter(movieAdapter);
+
     }
 }

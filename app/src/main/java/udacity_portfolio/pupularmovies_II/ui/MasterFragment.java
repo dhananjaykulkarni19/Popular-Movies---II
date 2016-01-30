@@ -26,7 +26,6 @@ public class MasterFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_master_layout, container, false);
         ButterKnife.bind(this, rootView);
-        Toast.makeText(getActivity(), "MasterFragment", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }

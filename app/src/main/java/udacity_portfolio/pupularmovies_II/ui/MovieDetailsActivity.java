@@ -1,6 +1,7 @@
 package udacity_portfolio.pupularmovies_II.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +29,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,9 +39,10 @@ import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
+import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.model.MovieReviews;
-import udacity_portfolio.pupularmovies_II.utils.Constants;
+import udacity_portfolio.pupularmovies_II.utils.Utils;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -93,6 +98,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     String mTrailersUrl, mReviewsUrl;
 
+    FavouriteMovie favouriteMovie;
+
+    boolean gotTrailers = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,13 +126,20 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if(isFavourite){
 
             movie.isFavourite = false;
+            favouriteMovie.favMovieId = "";
+            favouriteMovie.save();
+
             Toast.makeText(this, getString(R.string.label_un_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = false;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
             movie.save();
 
-        }else {
+        } else {
+
             movie.isFavourite = true;
+            favouriteMovie.favMovieId = movieId;
+            favouriteMovie.save();
+
             Toast.makeText(this, getString(R.string.label_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = true;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.favourite_color)));
@@ -208,7 +224,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
                 if(mTrailersList != null && mTrailersList.size() > 0 ){
 
-                    String video = Constants.YOUTUBE_URL + mTrailersList.get(0);
+                    String video = Utils.YOUTUBE_URL + mTrailersList.get(0);
 
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
@@ -240,15 +256,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
         tvReleaseDate.setText(getString(R.string.release_date) + " " + movie.releaseDate);
         tvVoterAverage.setText(getString(R.string.vote_average) + " " + movie.voteAverage);
 
-        checkFavourite();
-
         movieId = String.valueOf(movie.id);
 
-        trailerMasterLayout.setVisibility(View.VISIBLE);
-        tvVideoInfo.setVisibility(View.VISIBLE);
+        favouriteMovie = new FavouriteMovie();
+        checkFavourite();
 
-        mTrailersUrl = Constants.TRAILERS_URL_PART_1 + movieId + Constants.TRAILERS_URL_PART_2;
-        mReviewsUrl = Constants.REVIEWS_URL_PART_1 + movieId + Constants.REVIEWS_URL_PART_2;
+        if(!gotTrailers){
+            trailerMasterLayout.setVisibility(View.VISIBLE);
+            tvVideoInfo.setVisibility(View.VISIBLE);
+        }
+
+        mTrailersUrl = Utils.TRAILERS_URL_PART_1 + movieId + Utils.TRAILERS_URL_PART_2;
+        mReviewsUrl = Utils.REVIEWS_URL_PART_1 + movieId + Utils.REVIEWS_URL_PART_2;
 
         getMovieData(mTrailersUrl);
         getMovieData(mReviewsUrl);
@@ -256,13 +275,21 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private void startYoutube(int position){
 
-        Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Constants.YOUTUBE_API_KEY, mTrailersList.get(position));
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetailsActivity.this, Utils.YOUTUBE_API_KEY, mTrailersList.get(position));
         startActivity(intent);
     }
 
     private void checkFavourite(){
 
-        if(movie.isFavourite){
+        List<FavouriteMovie> favouriteMovieList = FavouriteMovie.getAllFavouriteMovieIds();
+        List<String> favouriteMovieIdList = new ArrayList<>();
+
+        for(int i=0; i<favouriteMovieList.size(); i++){
+
+            favouriteMovieIdList.add(favouriteMovieList.get(i).favMovieId);
+        }
+
+        if(favouriteMovieIdList.contains(movieId)){
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.favourite_color)));
         }else{
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
@@ -310,6 +337,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
             movie.trailers = TextUtils.join(",", mTrailersList);
             movie.save();
+
+            gotTrailers = true;
 
             if(mTrailersList.size() < 2){
 
