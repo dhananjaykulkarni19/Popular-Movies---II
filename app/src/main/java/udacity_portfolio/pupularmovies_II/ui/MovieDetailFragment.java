@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -97,13 +98,17 @@ public class MovieDetailFragment extends Fragment {
     private ArrayList<String> mTrailersList;
     private ArrayList<MovieReviews> mReviewsList;
 
-    Movie movieFromDb;
+    Movie thisMovie;
 
     View rootView;
 
     FavouriteMovie favouriteMovie;
 
     MovieReviews movieReviews;
+
+    String mTrailersUrl, mReviewsUrl;
+
+    boolean gotTrailers = false;
 
     public MovieDetailFragment(){}
 
@@ -120,9 +125,9 @@ public class MovieDetailFragment extends Fragment {
     @OnClick(R.id.fab)
     public void onFavouriteClick(){
 
-        if(movieFromDb.isFavourite){
+        if(thisMovie.isFavourite){
 
-            movieFromDb.isFavourite = false;
+            thisMovie.isFavourite = false;
 
             favouriteMovie.favMovieId = "";
             favouriteMovie.save();
@@ -130,10 +135,10 @@ public class MovieDetailFragment extends Fragment {
             Toast.makeText(getActivity(), getString(R.string.label_un_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = false;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-            movieFromDb.save();
+            thisMovie.save();
 
         }else {
-            movieFromDb.isFavourite = true;
+            thisMovie.isFavourite = true;
 
             favouriteMovie.favMovieId = movieId;
             favouriteMovie.save();
@@ -141,7 +146,7 @@ public class MovieDetailFragment extends Fragment {
             Toast.makeText(getActivity(), getString(R.string.label_favourite), Toast.LENGTH_SHORT).show();
             isFavourite = true;
             btnFavourite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.favourite_color)));
-            movieFromDb.save();
+            thisMovie.save();
         }
     }
 
@@ -176,22 +181,36 @@ public class MovieDetailFragment extends Fragment {
     }
 
     @OnClick(R.id.btnreviews)
-    public void reviews(){
+    public void reviews() {
 
         List<MovieReviews> movieReviewses = MovieReviews.getAllMovieReviews(movieId);
 
-        if(movieReviewses.size() == 0){
+        if (movieReviewses.size() == 0) {
             Toast.makeText(getActivity(), R.string.no_reviews, Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
 
-            trailerMasterLayout.setVisibility(View.VISIBLE);
+            if (getActivity().getText(R.string.screen_type).toString().equalsIgnoreCase("Large")) {
 
-            Intent intent = new Intent();
-            intent.setClass(getActivity(), ReviewsActivity.class);
-            EventBus.getDefault().postSticky(movieFromDb);
-            startActivity(intent);
+                ReviewsFragment reviewsFragment = new ReviewsFragment();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, reviewsFragment)
+                        .addToBackStack(null)
+                        .commit();
+                EventBus.getDefault().postSticky(thisMovie);
+
+            } else {
+
+                trailerMasterLayout.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), ReviewsActivity.class);
+                EventBus.getDefault().postSticky(thisMovie);
+                startActivity(intent);
+            }
         }
     }
+
 
     @Override
     public void onStart() {
@@ -209,13 +228,18 @@ public class MovieDetailFragment extends Fragment {
 
     public void onEventMainThread(Movie movie){
 
-        movieFromDb = movie;
+        thisMovie = movie;
 
         Picasso.with(getActivity())
                 .load(movie.poster)
                 .placeholder(R.mipmap.ic_placeholder)
                 .error(R.mipmap.ic_image_error)
                 .into(ivMovieThumbnail);
+
+        if(((AppCompatActivity) getActivity()).getSupportActionBar() != null){
+
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(movie.title);
+        }
 
         tvOverview.setText(getString(R.string.overview) + " " + movie.overView);
         tvReleaseDate.setText(getString(R.string.release_date) + " " + movie.releaseDate);
@@ -226,18 +250,16 @@ public class MovieDetailFragment extends Fragment {
 
         checkFavourite();
 
-        trailerMasterLayout.setVisibility(View.VISIBLE);
-        tvVideoInfo.setVisibility(View.VISIBLE);
+        if(!gotTrailers){
+            trailerMasterLayout.setVisibility(View.VISIBLE);
+            tvVideoInfo.setVisibility(View.VISIBLE);
+        }
 
-        String reviewsUrl = Utils.REVIEWS_URL_PART_1 + movieId + Utils.REVIEWS_URL_PART_2;
+        mTrailersUrl = Utils.TRAILERS_URL_PART_1 + movieId + Utils.TRAILERS_URL_PART_2;
+        mReviewsUrl = Utils.REVIEWS_URL_PART_1 + movieId + Utils.REVIEWS_URL_PART_2;
 
-        getMovieData(reviewsUrl);
-    }
-
-    public void onEventMainThread(MovieReviews reviews){
-
-        movieReviews = reviews;
-
+        getMovieData(mReviewsUrl);
+        getMovieData(mTrailersUrl);
     }
 
     private void startYoutube(int position){
@@ -289,7 +311,7 @@ public class MovieDetailFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "Exception ..!!!");
 
             }
@@ -299,6 +321,45 @@ public class MovieDetailFragment extends Fragment {
     }
 
     private void parseJSON(String url, JSONObject response) throws JSONException {
+
+        if(url.equalsIgnoreCase(mTrailersUrl)){
+
+            mTrailersList  = new ArrayList<>();
+
+            JSONArray trailersArray = response.getJSONArray("results");
+
+            for(int resultCount =0; resultCount < trailersArray.length(); resultCount++){
+
+                mTrailersList.add(trailersArray.getJSONObject(resultCount).getString("key"));
+            }
+
+            thisMovie.trailers = TextUtils.join(",", mTrailersList);
+            thisMovie.save();
+
+            gotTrailers = true;
+
+            if(mTrailersList.size() < 2){
+
+                btnTrailer2.setVisibility(View.GONE);
+                btnTrailer3.setVisibility(View.GONE);
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
+                trailerButtonLayout.setVisibility(View.VISIBLE);
+
+            }else if(mTrailersList.size() < 3){
+                btnTrailer3.setVisibility(View.GONE);
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
+                trailerButtonLayout.setVisibility(View.VISIBLE);
+            }else{
+
+                tvVideoInfo.setVisibility(View.GONE);
+                trailerMasterLayout.setVisibility(View.VISIBLE);
+                trailerButtonLayout.setVisibility(View.VISIBLE);
+            }
+
+        }else if (url.equalsIgnoreCase(mReviewsUrl)){
+
             mReviewsList = new ArrayList<>();
 
             JSONArray reviewsArray = response.getJSONArray("results");
@@ -311,10 +372,11 @@ public class MovieDetailFragment extends Fragment {
                 movieReviews.author = reviewsArray.getJSONObject(reviewsCount).getString("author");
                 movieReviews.content = reviewsArray.getJSONObject(reviewsCount).getString("content");
                 movieReviews.url = reviewsArray.getJSONObject(reviewsCount).getString("url");
-                movieReviews.movieid = movieFromDb.id;
+                movieReviews.movieid = thisMovie.id;
 
                 movieReviews.save();
 
             }
         }
+    }
     }

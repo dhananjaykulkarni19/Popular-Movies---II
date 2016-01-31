@@ -6,12 +6,7 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.MovieDetailsActivity">
 
-    <ListView
-        android:id="@+id/lvreviews"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/view_margin">
-    </ListView>
+    <include layout="@layout/listview_layout"/>
 
 </RelativeLayout>
 
