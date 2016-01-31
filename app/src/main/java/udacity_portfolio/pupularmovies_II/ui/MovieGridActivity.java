@@ -37,7 +37,7 @@ import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
 import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
 import udacity_portfolio.pupularmovies_II.model.Movie;
-import udacity_portfolio.pupularmovies_II.utils.Utils;
+import udacity_portfolio.pupularmovies_II.utils.Constants;
 
 public class MovieGridActivity extends AppCompatActivity implements SortDialog.SortDialogListener{
 
@@ -89,7 +89,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
         if(isNetworkAvailable()){
             Log.i(TAG, "Making request from activity");
-            makeMovieRequest(Utils.URL);
+            makeMovieRequest(Constants.URL);
         }else{
             showInformationDialog(getString(R.string.network_message));
         }
@@ -188,16 +188,16 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
             movie = new Movie();
             movie.title = title;
-            movie.thumbNail  = Utils.IMAGE_BASE_URL +thumbNail;
+            movie.thumbNail  = Constants.IMAGE_BASE_URL +thumbNail;
             movie.overView = overView;
             movie.voteAverage = voteAverage;
             movie.releaseDate = releaseDate;
-            movie.poster = Utils.IMAGE_BASE_URL + poster;
+            movie.poster = Constants.IMAGE_BASE_URL + poster;
             movie.id = id;
 
-            if(url.equalsIgnoreCase(Utils.HIGHEST_RATED_URL)){
+            if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
                 movie.isHighestRated = true;
-            }else if(url.equalsIgnoreCase(Utils.POPULARITY_URL)){
+            }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
                 movie.isPopular = true;
             }
 
@@ -209,7 +209,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
         EventBus.getDefault().postSticky(Movie.getAllMovies());
 
-        if(url.equalsIgnoreCase(Utils.URL)){
+        if(url.equalsIgnoreCase(Constants.URL)){
             mMovieList = Movie.getAllMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -219,7 +219,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
                 getSupportActionBar().setTitle(R.string.app_name);
             }
 
-        }else if(url.equalsIgnoreCase(Utils.HIGHEST_RATED_URL)){
+        }else if(url.equalsIgnoreCase(Constants.HIGHEST_RATED_URL)){
             mMovieList = Movie.getAllHighestRatedMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -229,7 +229,7 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
                 getSupportActionBar().setTitle(R.string.highest_rated);
             }
 
-        }else if(url.equalsIgnoreCase(Utils.POPULARITY_URL)){
+        }else if(url.equalsIgnoreCase(Constants.POPULARITY_URL)){
             mMovieList = Movie.getAllPopularMovies();
             MovieAdapter adapter = new MovieAdapter(getApplicationContext(), mMovieList);
             movieGridView.setAdapter(adapter);
@@ -247,12 +247,12 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
         if(which == 0 && isChecked){
 
             movieGridView.setVisibility(View.GONE);
-            makeMovieRequest(Utils.HIGHEST_RATED_URL);
+            makeMovieRequest(Constants.HIGHEST_RATED_URL);
             dialog.dismiss();
 
         }else if(which == 1 && isChecked){
 
-            makeMovieRequest(Utils.POPULARITY_URL);
+            makeMovieRequest(Constants.POPULARITY_URL);
             dialog.dismiss();
             movieGridView.setVisibility(View.GONE);
 
