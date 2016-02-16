@@ -313,7 +313,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(MovieDetailsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                if(url.equalsIgnoreCase(mTrailersUrl)){
+                    Toast.makeText(MovieDetailsActivity.this, getString(R.string.trailers_Error), Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MovieDetailsActivity.this, getString(R.string.reviews_error), Toast.LENGTH_SHORT).show();
+                }
+
                 Log.i(TAG, "Exception ..!!!");
 
             }

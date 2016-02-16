@@ -2,6 +2,7 @@ package udacity_portfolio.pupularmovies_II.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -36,6 +37,7 @@ import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.adapters.MovieAdapter;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
 import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
+import udacity_portfolio.pupularmovies_II.model.FragmentShare;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.utils.Utils;
 
@@ -55,14 +57,16 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     Movie movie;
 
+    String mScreenType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
         ButterKnife.bind(this);
-        String screenType = getResources().getString(R.string.screen_type);
+        mScreenType = getResources().getString(R.string.screen_type);
 
-        if(screenType.equalsIgnoreCase("Large")){
+        if(mScreenType.equalsIgnoreCase("Large")){
 
             Log.i(TAG, "Tablet Layout Loaded");
             FrameLayout layout = (FrameLayout) findViewById(R.id.fragment_container);
@@ -136,7 +140,14 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_sort, menu);
+
+        if(mScreenType.equalsIgnoreCase("Large")){
+
+            getMenuInflater().inflate(R.menu.menu_fragment, menu);
+
+        }else{
+            getMenuInflater().inflate(R.menu.menu_sort, menu);
+        }
 
         return true;
     }
@@ -144,13 +155,49 @@ public class MovieGridActivity extends AppCompatActivity implements SortDialog.S
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
 
-            case R.id.sort:
-                showSortDialog();
-            break;
+        if(mScreenType.equalsIgnoreCase("Large")){
+
+            switch (item.getItemId()){
+
+                case R.id.sort:
+                    showSortDialog();
+                break;
+
+                case R.id.action_share:
+
+                    EventBus.getDefault().postSticky(new FragmentShare(true));
+
+                    /*String trailers = movie.trailers;
+
+                    if (trailers != null) {
+
+                        String [] trailersArray = trailers.split(",");
+
+                        String video = Utils.YOUTUBE_URL + trailersArray[0];
+
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, video);
+                        sendIntent.setType("text/plain");
+                        startActivity(sendIntent);
+                    }*/
+                break;
+            }
+
+        }else{
+
+            switch (item.getItemId()){
+
+                case R.id.sort:
+                    showSortDialog();
+                    break;
+
+            }
 
         }
+
+
         return true;
     }
 

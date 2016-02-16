@@ -31,6 +31,8 @@
     <string name="getting_videos">Please wait getting trailers …</string>
     <string name="no_favourites">You don\'t have any favourites</string>
     <string name="no_youtube">Please install Youtube app to watch this trailer</string>
+    <string name="trailers_Error">Could not load trailers</string>
+    <string name="reviews_error">Could not load reviews</string>
 
 </resources>
 

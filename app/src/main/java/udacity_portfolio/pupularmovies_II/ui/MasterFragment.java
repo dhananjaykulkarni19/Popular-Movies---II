@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -38,14 +41,18 @@ public class MasterFragment extends Fragment {
             rootView = inflater.inflate(R.layout.fragment_master_layout, container, false);
             ButterKnife.bind(this, rootView);
         } catch (InflateException e) {
-        /* map is already there, just return view as it is */
+
         }
         return rootView;
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-        /*rootView = inflater.inflate(R.layout.fragment_master_layout, container, false);
-        ButterKnife.bind(this, rootView);
-
-        return rootView;*/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }

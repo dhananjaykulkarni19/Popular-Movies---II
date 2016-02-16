@@ -52,6 +52,7 @@
                 style="@style/TabTextStyle"
                 android:layout_margin="@dimen/view_margin"/>
 
+
             <LinearLayout
                 android:id="@+id/trailermasterlayout"
                 android:layout_width="match_parent"
@@ -113,7 +114,6 @@
                 android:text="@string/label_reviews"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="10dp"/>
-
 
         </RelativeLayout>
     </ScrollView>

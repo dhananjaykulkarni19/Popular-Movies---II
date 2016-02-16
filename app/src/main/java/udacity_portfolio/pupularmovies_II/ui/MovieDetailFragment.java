@@ -12,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +43,7 @@ import de.greenrobot.event.EventBus;
 import udacity_portfolio.pupularmovies_II.R;
 import udacity_portfolio.pupularmovies_II.app.ApplicationController;
 import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
+import udacity_portfolio.pupularmovies_II.model.FragmentShare;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.model.MovieReviews;
 import udacity_portfolio.pupularmovies_II.utils.Utils;
@@ -226,6 +230,21 @@ public class MovieDetailFragment extends Fragment {
         EventBus.getDefault().unregister(this);
     }
 
+    public void onEventMainThread(FragmentShare fragmentShare){
+
+        if(mTrailersList != null && mTrailersList.size() > 0 ){
+
+            String video = Utils.YOUTUBE_URL + mTrailersList.get(0);
+
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, video);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+
+        }
+    }
+
     public void onEventMainThread(Movie movie){
 
         thisMovie = movie;
@@ -311,7 +330,12 @@ public class MovieDetailFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                if(url.equalsIgnoreCase(mTrailersUrl)){
+                    Toast.makeText(getActivity(), getString(R.string.trailers_Error), Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getActivity(), getString(R.string.reviews_error), Toast.LENGTH_SHORT).show();
+                }
+
                 Log.i(TAG, "Exception ..!!!");
 
             }
