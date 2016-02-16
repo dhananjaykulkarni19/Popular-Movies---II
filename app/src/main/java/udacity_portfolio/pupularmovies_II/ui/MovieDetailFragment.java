@@ -46,7 +46,7 @@ import udacity_portfolio.pupularmovies_II.model.FavouriteMovie;
 import udacity_portfolio.pupularmovies_II.model.FragmentShare;
 import udacity_portfolio.pupularmovies_II.model.Movie;
 import udacity_portfolio.pupularmovies_II.model.MovieReviews;
-import udacity_portfolio.pupularmovies_II.utils.Utils;
+import udacity_portfolio.pupularmovies_II.utils.Constants;
 
 /**
  * Created by admin on 1/26/2016.
@@ -274,8 +274,8 @@ public class MovieDetailFragment extends Fragment {
             tvVideoInfo.setVisibility(View.VISIBLE);
         }
 
-        mTrailersUrl = Utils.TRAILERS_URL_PART_1 + movieId + Utils.TRAILERS_URL_PART_2;
-        mReviewsUrl = Utils.REVIEWS_URL_PART_1 + movieId + Utils.REVIEWS_URL_PART_2;
+        mTrailersUrl = Constants.TRAILERS_URL_PART_1 + movieId + Constants.TRAILERS_URL_PART_2;
+        mReviewsUrl = Constants.REVIEWS_URL_PART_1 + movieId + Constants.REVIEWS_URL_PART_2;
 
         getMovieData(mReviewsUrl);
         getMovieData(mTrailersUrl);
@@ -284,7 +284,7 @@ public class MovieDetailFragment extends Fragment {
     private void startYoutube(int position){
 
         try{
-            Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), Utils.YOUTUBE_API_KEY, mTrailersList.get(position));
+            Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), Constants.YOUTUBE_API_KEY, mTrailersList.get(position));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }catch (ActivityNotFoundException e){
