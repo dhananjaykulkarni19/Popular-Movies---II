@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.annotation.Column;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -234,7 +235,7 @@ public class MovieDetailFragment extends Fragment {
 
         if(mTrailersList != null && mTrailersList.size() > 0 ){
 
-            String video = Utils.YOUTUBE_URL + mTrailersList.get(0);
+            String video = Constants.YOUTUBE_URL + mTrailersList.get(0);
 
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
